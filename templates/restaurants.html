@@ -1,0 +1,23 @@
+<!-- restaurants.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restaurants</title>
+</head>
+<body>
+    <h1>Restaurants</h1>
+    
+    <form action="{{ url_for('get_restaurants') }}" method="POST">
+        <label for="restaurant">Select a Restaurant:</label>
+        <select id="restaurant" name="restaurant_id">
+            <option value="" selected disabled>Please select one</option>
+            {% for restaurant in restaurants %}
+                <option value="{{ restaurant.RestaurantID }}">{{ restaurant[1] }}</option>
+            {% endfor %}
+        </select>
+        <input type="submit" value="View Menu">
+    </form>
+</body>
+</html>
