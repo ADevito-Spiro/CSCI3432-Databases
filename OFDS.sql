@@ -20,6 +20,7 @@ CREATE TABLE Restaurant(
     RestaurantDesc varchar(800),
     RestaurantStarRating enum('0','1', '2', '3', '4', '5','6') NOT NULL, -- [0,5] inclusive 
     RestaurantLocation varchar(50),
+    Approved BOOLEAN DEFAULT FALSE,  
     PRIMARY KEY (RestaurantID),
     check (length((RestaurantID))=4)
 );

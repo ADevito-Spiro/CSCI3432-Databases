@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administrator - View Restaurant Registrations</title>
+</head>
+<body>
+    <h1>Administrator - View Restaurant Registrations</h1>
+    <table border="1">
+        <tr>
+            <th>Restaurant ID</th>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Location</th>
+            <th>Action</th>
+        </tr>
+        {% for restaurant in unapproved_restaurants %}
+        <tr>
+            <td>{{ restaurant[0] }}</td>
+            <td>{{ restaurant[1] }}</td>
+            <td>{{ restaurant[2] }}</td>
+            <td>{{ restaurant[3] }}</td>
+            <td>
+                <form method="POST" action="/admin/restaurants">
+                    <input type="hidden" name="restaurant_id" value="{{ restaurant[0] }}">
+                    <input type="submit" value="Approve">
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

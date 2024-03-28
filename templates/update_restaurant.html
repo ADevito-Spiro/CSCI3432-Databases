@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Restaurant</title>
+</head>
+<body>
+    <h1>Update Restaurant</h1>
+    <form method="POST" action="/restaurants/update">
+        <label for="restaurant_id">Restaurant ID:</label>
+        <input type="text" id="restaurant_id" name="restaurant_id" required><br><br>
+        
+        <label for="menu_item">Menu Item:</label>
+        <input type="text" id="menu_item" name="menu_item" required><br><br>
+        
+        <label for="item_desc">Item Description:</label>
+        <input type="text" id="item_desc" name="item_desc" required><br><br>
+        
+        <label for="item_price">Item Price:</label>
+        <input type="text" id="item_price" name="item_price" required><br><br>
+        
+        <label for="location">New Location:</label>
+        <input type="text" id="location" name="location" required><br><br>
+        
+        <input type="submit" value="Update Restaurant">
+    </form>
+</body>
+</html>

@@ -103,5 +103,81 @@ def new_customer():
 
     return render_template('customers.html')
 
+
+@app.route('/customers/update', methods=['GET', 'POST'])
+def update_customer():
+    if request.method == 'POST':
+        customer_id = request.form['customer_id']
+        address = request.form['address']
+        payment_info = request.form['payment_info']
+
+        connection = connect_to_database()
+        cursor = connection.cursor()
+
+        query = "UPDATE Customer SET CustomerAddress = %s, CustomerPaymentInfo = %s WHERE CustomerID = %s"
+        cursor.execute(query, (address, payment_info, customer_id))
+
+        connection.commit()
+
+        cursor.close()
+        connection.close()
+
+        return redirect(url_for('home'))
+
+    return render_template('update_customer.html')
+
+
+@app.route('/restaurants/update', methods=['GET', 'POST'])
+def update_restaurant():
+    if request.method == 'POST':
+        restaurant_id = request.form['restaurant_id']
+        menu_item = request.form['menu_item']
+        item_desc = request.form['item_desc']
+        item_price = request.form['item_price']
+        location = request.form['location']
+
+        connection = connect_to_database()
+        cursor = connection.cursor()
+
+        query = "INSERT INTO Menu (RestaurantID, MenuItem, MenuItemDesc, MenuItemPrice) VALUES (%s, %s, %s, %s)"
+        cursor.execute(query, (restaurant_id, menu_item, item_desc, item_price))
+
+        query = "UPDATE Restaurant SET RestaurantLocation = %s WHERE RestaurantID = %s"
+        cursor.execute(query, (location, restaurant_id))
+
+        connection.commit()
+
+        cursor.close()
+        connection.close()
+
+        return redirect(url_for('home'))
+
+    return render_template('update_restaurant.html')
+
+
+@app.route('/admin/restaurants', methods=['GET', 'POST'])
+def admin_restaurants():
+    connection = connect_to_database()
+    cursor = connection.cursor()
+
+    if request.method == 'POST':
+        restaurant_id = request.form['restaurant_id']
+
+        query = "UPDATE Restaurant SET Approved = TRUE WHERE RestaurantID = %s"
+        cursor.execute(query, (restaurant_id,))
+
+        connection.commit()
+
+    query = "SELECT * FROM Restaurant WHERE Approved = FALSE"
+    cursor.execute(query)
+    unapproved_restaurants = cursor.fetchall()
+
+    cursor.close()
+    connection.close()
+
+    return render_template('admin_restaurants.html', unapproved_restaurants=unapproved_restaurants)
+
+
+
 if __name__ == '__main__':
     app.run(debug=True)

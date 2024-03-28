@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Customer Information</title>
+</head>
+<body>
+    <h1>Update Customer Information</h1>
+    <form method="POST" action="/customers/update">
+        <label for="customer_id">Customer ID:</label>
+        <input type="text" id="customer_id" name="customer_id" required><br><br>
+        
+        <label for="address">New Address:</label>
+        <input type="text" id="address" name="address" required><br><br>
+        
+        <label for="payment_info">New Payment Info:</label>
+        <input type="text" id="payment_info" name="payment_info" required><br><br>
+        
+        <input type="submit" value="Update Information">
+    </form>
+</body>
+</html>
