@@ -4,7 +4,7 @@ use OFDS;
 
 /* Customer Table */
 CREATE TABLE Customer(
-    CustomerID INT not null, /* ensures unique idenfier if NOS */
+    CustomerID INT not null, /* ensures unique identifier if NOS */
     CustomerName varchar(50),
     CustomerEmail varchaR(50), 
     CustomerAddress varchar(50),
@@ -45,7 +45,7 @@ CREATE TABLE Orders(
     RestaurantID INT not null,
     OrdersDate DATE,
     TotalPrice decimal(10, 2), -- add mechanic in application logic 
-    OrdersStatus enum("RECIEVED","PENDING","DELIVERED","IN-TRANSIT","CANCELED") NOT NULL,
+    OrdersStatus enum("RECEIVED","PENDING","DELIVERED","IN-TRANSIT","CANCELED") NOT NULL,
     CustomerComment varchar(1000),
     primary key (OrdersID),
     FOREIGN KEY (CustomerID) REFERENCES Customer(CustomerID), /* One-to-One for brevity's sake */
@@ -62,7 +62,7 @@ add column MenuItemPrice decimal(10,2);
 /* Driver */
 CREATE TABLE Driver(
     DriverID INT not null, -- can start with 4 for example 
-    CurrentDriverLocation varchar(60), /* you can change later if you want it to be corrdinates/regex */
+    CurrentDriverLocation varchar(60), /* you can change later if you want it to be coordinates/regex */
     DriverName varchar(100),
     DriverDesc varchar(300),
     OrderIsReceived bool,
@@ -90,7 +90,7 @@ CREATE TABLE Price(
 	check (length((OrdersID))=4)
 );
 
-/* Private/protected access modifyer in application logic, last four digits whatever you like to store it as */
+/* Private/protected access modifier in application logic, last four digits whatever you like to store it as */
 CREATE TABLE PaymentInformation(
     CustomerID INT auto_increment PRIMARY KEY,
     CardNum int not null 
@@ -144,7 +144,7 @@ VALUES(1004,"Lilli G.", "lilli012@yahoo.com", "012 North Ave", "Debit Card");
 desc Customer;
 Select * from Customer;
 
--- Restarant Table
+-- Restaurant Table
 insert into Restaurant(RestaurantID, RestaurantName, RestaurantDesc, RestaurantStarRating, RestaurantLocation)
 values(2000,"The Binary Burrito","An award-winning, casual dining spot serving Mexican food with an American Southern influence",4,"859 Brefield Way");
 
@@ -160,21 +160,21 @@ select * from Restaurant;
 insert into Menu(MenuID, RestaurantID, MenuItem, MenuItemDesc,MenuItemPrice)
 values(3000,2000,"Burrito Bowl","Burrito bowl with your choice of chicken, barbacoa, or steak",13.99);
 insert into Menu(MenuID, RestaurantID, MenuItem, MenuItemDesc,MenuItemPrice)
-values(3001,2001,"Double-Quarter Pounder with Cheese","Two 1/4 pound angus beef patties, lettace, tomato, and American cheese. Comes with fries",14.99);
+values(3001,2001,"Double-Quarter Pounder with Cheese","Two 1/4 pound angus beef patties, lettuce, tomato, and American cheese. Comes with fries",14.99);
 insert into Menu(MenuID, RestaurantID, MenuItem, MenuItemDesc,MenuItemPrice)
-values(3002,2002,"Brown Sugar Shaken Expresso","Two pumps of our signature brown sugar syrup, blonde roast expresso, a splash of oatmilk, topped with sweet cream cinimon vanilla cold foam",8.99);
+values(3002,2002,"Brown Sugar Shaken Espresso","Two pumps of our signature brown sugar syrup, blonde roast espresso, a splash of oatmilk, topped with sweet cream cinnamon vanilla cold foam",8.99);
 
 select * from Menu;
 
 alter table Orders
 modify OrdersDate DATETIME default current_timestamp;
 
--- Orders (Most Foirien Key Connections)
+-- Orders (Most Foreign Key Connections)
 insert into Orders(OrdersID, CustomerID, RestaurantID, OrdersDate, TotalPrice, OrdersStatus, CustomerComment)
 values(4000,1001,2000,current_timestamp(),13.99,"PENDING","Extra chicken, please");
 
 insert into Orders(OrdersID, CustomerID, RestaurantID, OrdersDate, TotalPrice, OrdersStatus, CustomerComment)
-values(4001,1002,2001,current_timestamp(),14.99,"DELIVERED","No pickels or mustard, please. Fries extra crispy");
+values(4001,1002,2001,current_timestamp(),14.99,"DELIVERED","No pickles or mustard, please. Fries extra crispy");
 
 insert into Orders(OrdersID, CustomerID, RestaurantID, OrdersDate, TotalPrice, OrdersStatus, CustomerComment)
 values(4002,1003,2002,current_timestamp(),8.99,"IN-TRANSIT","Light ice, no cold foam, please");

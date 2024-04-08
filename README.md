@@ -1,1 +1,3 @@
-# CSCI3432-Databases
+# CSCI3432-Databases OFDS
+
+##### [-] updated spelling in sql script

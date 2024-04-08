@@ -11,7 +11,7 @@ app = Flask(__name__)
 DB_HOST = 'localhost'
 DB_USER = 'root'
 DB_PASSWORD = ''
-DB_NAME = 'ofds'
+DB_NAME = 'OFDS'
 
 # Function to establish a connection to the MySQL database
 def connect_to_database():
