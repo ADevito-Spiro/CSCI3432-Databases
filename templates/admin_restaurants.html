@@ -4,6 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Administrator - View Restaurant Registrations</title>
+    <nav>
+        <ul>
+            <li>
+                <a href="{{ url_for('home') }}">Home</a>
+            </li>
+        </ul>
+    </nav>
 </head>
 <body>
     <h1>Administrator - View Restaurant Registrations</h1>
@@ -22,9 +29,26 @@
             <td>{{ restaurant[2] }}</td>
             <td>{{ restaurant[3] }}</td>
             <td>
-                <form method="POST" action="/admin/restaurants">
+                <form method="POST" action="{{ url_for('handle_restaurant_action') }}">
                     <input type="hidden" name="restaurant_id" value="{{ restaurant[0] }}">
+                    <input type="hidden" name="action" value="approve">
                     <input type="submit" value="Approve">
+                </form>
+                                
+            </td>
+        </tr>
+        {% endfor %}
+        {% for restaurant in all_restaurants %}
+        <tr>
+            <td>{{ restaurant[0] }}</td>
+            <td>{{ restaurant[1] }}</td>
+            <td>{{ restaurant[2] }}</td>
+            <td>{{ restaurant[3] }}</td>
+            <td>
+                <form method="POST" action="{{ url_for('handle_restaurant_action') }}">
+                    <input type="hidden" name="restaurant_id" value="{{ restaurant[0] }}">
+                    <input type="hidden" name="action" value="unapprove">
+                    <input type="submit" value="Deny">
                 </form>
             </td>
         </tr>

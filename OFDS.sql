@@ -8,7 +8,7 @@ CREATE TABLE Customer(
     CustomerName varchar(50),
     CustomerEmail varchaR(50), 
     CustomerAddress varchar(50),
-    CustomerPaymentInfo varchar(100),
+    CustomerPaymentType varchar(100),
     PRIMARY KEY (CustomerID),
     check (length((CustomerID))=4)
 );
@@ -129,30 +129,30 @@ CREATE TABLE Quantity(
 
 -- TEST CASES (Dont feel obligated to keep the names lol) 
 -- Customer Table
-INSERT INTO Customer(CustomerID, CustomerName, CustomerEmail, CustomerAddress, CustomerPaymentInfo)
+INSERT INTO Customer(CustomerID, CustomerName, CustomerEmail, CustomerAddress, CustomerPaymentType)
 VALUES(1001,"Austin S.", "austin123@gmail.com", "123 Main St", "CashApp");
 
-INSERT INTO Customer(CustomerID, CustomerName, CustomerEmail, CustomerAddress, CustomerPaymentInfo)
+INSERT INTO Customer(CustomerID, CustomerName, CustomerEmail, CustomerAddress, CustomerPaymentType)
 VALUES(1002,"Dartagnan S.", "sams456@hotmail.com", "456 South Blvd", "Credit Card");
 
-INSERT INTO Customer(CustomerID, CustomerName, CustomerEmail, CustomerAddress, CustomerPaymentInfo)
+INSERT INTO Customer(CustomerID, CustomerName, CustomerEmail, CustomerAddress, CustomerPaymentType)
 VALUES(1003,"Vale S.", "vale789@gmail.com", "789 West Pt", "Cash");
 
-INSERT INTO Customer(CustomerID, CustomerName, CustomerEmail, CustomerAddress, CustomerPaymentInfo)
+INSERT INTO Customer(CustomerID, CustomerName, CustomerEmail, CustomerAddress, CustomerPaymentType)
 VALUES(1004,"Lilli G.", "lilli012@yahoo.com", "012 North Ave", "Debit Card");
 
 desc Customer;
 Select * from Customer;
 
 -- Restaurant Table
-insert into Restaurant(RestaurantID, RestaurantName, RestaurantDesc, RestaurantStarRating, RestaurantLocation)
-values(2000,"The Binary Burrito","An award-winning, casual dining spot serving Mexican food with an American Southern influence",4,"859 Brefield Way");
+insert into Restaurant(RestaurantID, RestaurantName, RestaurantDesc, RestaurantStarRating, RestaurantLocation, Approved)
+values(2000,"The Binary Burrito","An award-winning, casual dining spot serving Mexican food with an American Southern influence",4,"859 Brefield Way",false);
 
-insert into Restaurant(RestaurantID, RestaurantName, RestaurantDesc, RestaurantStarRating, RestaurantLocation)
-values(2001,"Cartesian Grill","A fast-casual burger joint offering over 10k order combinations",5,"114 Cheshire Pt");
+insert into Restaurant(RestaurantID, RestaurantName, RestaurantDesc, RestaurantStarRating, RestaurantLocation, Approved)
+values(2001,"Cartesian Grill","A fast-casual burger joint offering over 10k order combinations",5,"114 Cheshire Pt",false);
 
-insert into Restaurant(RestaurantID, RestaurantName, RestaurantDesc, RestaurantStarRating, RestaurantLocation)
-values(2002,"The Java Hut","A cafe that sources artisan-selected beans to brew specialty coffee and espresso-based drinks",5,"114 Tortuga Blvd");
+insert into Restaurant(RestaurantID, RestaurantName, RestaurantDesc, RestaurantStarRating, RestaurantLocation, Approved)
+values(2002,"The Java Hut","A cafe that sources artisan-selected beans to brew specialty coffee and espresso-based drinks",5,"114 Tortuga Blvd",false);
 
 select * from Restaurant;
 
