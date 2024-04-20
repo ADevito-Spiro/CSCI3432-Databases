@@ -4,16 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Administrator - View Restaurant Registrations</title>
+    <h1>Administrator - View Restaurant Registrations</h1>
     <nav>
         <ul>
             <li>
                 <a href="{{ url_for('home') }}">Home</a>
             </li>
+            <li>
+                <a href="{{ url_for('edit_customers') }}">Edit Customers</a>
+            </li>
         </ul>
     </nav>
 </head>
 <body>
-    <h1>Administrator - View Restaurant Registrations</h1>
+    
     <table border="1">
         <tr>
             <th>Restaurant ID</th>

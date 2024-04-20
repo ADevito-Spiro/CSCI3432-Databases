@@ -3,10 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script> -->
     <title>Customer Home</title>
+    <style>
+        body {
+            background-color: rgb(79,91,102);
+            color:white;
+        }
+        .overlay {
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+        .popup {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            width: 300px;
+            color: black;
+        }
+    </style>
 </head>
 <body>
     <h1>Customer Home</h1>  
+
+    <!-- Button to trigger the popup -->
+    <button onclick="togglePopup()">Edit User Information</button>
+
+    <!-- Popup for editing user information -->
+    <div id="popup" class="overlay">
+        <div class="popup">
+            <h2>Edit User Information</h2>
+            <form id="editForm" action="{{ url_for('self_edit', customer_id=customer_id) }}" method="POST">
+                <label for="name">Name:</label><br>
+                <input type="text" id="name" name="name"><br>
+                <label for="email">Email:</label><br>
+                <input type="email" id="email" name="email"><br>
+                <label for="payment_type">Payment Type:</label><br>
+                <input type="text" id="payment_type" name="payment_type"><br>
+                <label for="address">Address:</label><br>
+                <input type="text" id="address" name="address"><br><br>
+                <input type="submit" value="Save">
+                <button type="button" onclick="togglePopup()">Cancel</button>
+            </form>
+        </div>
+    </div>
+
     <div id="recent_orders">
         <h2>Recent Orders for: {{ customer_name }}</h2>
         <table>
@@ -20,17 +69,43 @@
                 </tr>
             </thead>
             <tbody>
-                {% for order in recent_orders %}
+                {% for i in range(0, drivers | length) %}
                 <tr>
-                    <td>{{ order['OrderID'] }}</td>
-                    <td>{{ order['DriverName'] }}</td>
-                    <td>{{ order['DriverLocation'] }}</td>
-                    <td>{{ order['Date'] }}</td>
-                    <td>{{ order['Total'] }}</td>
+                    <td>#{{ order_ids[i][0] }}</td>
+                    <td>{{ drivers[i][0] }}</td>
+                    <td>{{ drivers[i][1] }}</td>
+                    <td>{{ order_dates[i] }}</td>
+                    <td>{{ total_prices[i] }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
+
+    <script>
+        function togglePopup() {
+            var popup = document.getElementById('popup');
+            popup.style.display = (popup.style.display === 'none' || popup.style.display === '') ? 'block' : 'none';
+        }
+    </script>
+    <div id="map" style="height: 400px;"></div>
+    <!-- <script>
+        var map = L.map('map').setView([32.4488, -81.7832], 13); // Set initial map center and zoom level
+    
+        // Add a tile layer from OpenStreetMap
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+    
+        // Add markers for driver locations
+        {% for i in range(0, drivers | length) %}
+            {% if drivers[i][1] %}
+                var driverLocation{{ i }} = "{{ drivers[i][1] }}".split(",");
+                var lat{{ i }} = parseFloat(driverLocation{{ i }}[0]);
+                var lng{{ i }} = parseFloat(driverLocation{{ i }}[1]);
+                L.marker([lat{{ i }}, lng{{ i }}]).addTo(map);
+            {% endif %}
+        {% endfor %}
+    </script> -->
 </body>
 </html>

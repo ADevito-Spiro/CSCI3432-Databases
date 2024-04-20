@@ -7,7 +7,7 @@ app = Flask(__name__)
 # Configuration for MySQL connection
 DB_HOST = 'localhost'
 DB_USER = 'root'
-DB_PASSWORD = ''
+DB_PASSWORD = 'gobulls'
 DB_NAME = 'OFDS'
 
 # Function to establish a connection to the MySQL database
@@ -45,7 +45,7 @@ def login():
 @app.route('/restaurants', methods=['GET', 'POST'])
 def get_restaurants():
     if request.method == 'POST':
-        restaurant_id = request.values.get('restaurant_id')
+        restaurant_id = request.form.get('restaurant_id')
         print(restaurant_id)
         return redirect(url_for('menu', restaurant_id=restaurant_id))
 
@@ -72,10 +72,10 @@ def menu(restaurant_id):
     cursor.execute(query, (restaurant_id,))
     restaurant_name = cursor.fetchone()[0]
 
-    # Query to fetch menu items of the specific restaurant
-    query = "SELECT * FROM Menu WHERE RestaurantID = %s"
+    query = "SELECT MenuItem, MenuItemDesc, MenuItemPrice FROM Menu WHERE RestaurantID = %s"
     cursor.execute(query, (restaurant_id,))
     menu_items = cursor.fetchall()
+    print(menu_items)
 
     # Close cursor and connection
     cursor.close()
@@ -120,18 +120,15 @@ def new_customer():
             return redirect(url_for('customer_home',customer_id=customer_id))
     return render_template('customers.html')
 
+from flask import render_template
+
 @app.route('/customer_home/<int:customer_id>', methods=['GET', 'POST'])
 def customer_home(customer_id):
+    customer_id=customer_id
     if request.method == 'POST':
         try:
-            # Connect to the database
             connection = connect_to_database()
             cursor = connection.cursor()
-
-            # Fetch recent orders for the selected customer
-            query = "SELECT * FROM Orders WHERE CustomerID = %s"
-            cursor.execute(query, (customer_id,))
-            recent_orders = cursor.fetchall()
 
             # Fetch customer name for the selected customer
             query = "SELECT CustomerName FROM Customer WHERE CustomerID = %s"
@@ -142,14 +139,85 @@ def customer_home(customer_id):
             cursor.close()
             connection.close()
 
-            return render_template('customer_home.html', recent_orders=recent_orders, customer_name=customer_name)
+            # Display the page initially with no specific customer selected
+            return render_template('customer_home.html', customer_name=customer_name)
+
         except Exception as e:
             # Handle errors
             print("Error fetching recent orders:", e)
             return "Error fetching recent orders", 500  # Return an error message with status code 500
     else:
+        connection = connect_to_database()
+        cursor = connection.cursor()
+
+        # Fetch customer name for the selected customer
+        query = "SELECT CustomerName FROM Customer WHERE CustomerID = %s"
+        cursor.execute(query, (customer_id,))
+        customer_name = cursor.fetchone()[0]
+
+        # Fetch recent orders for the selected customer
+        query = "SELECT OrdersID FROM Orders WHERE CustomerID = %s"
+        cursor.execute(query, (customer_id,))
+        order_ids = cursor.fetchall()
+
+        drivers = []
+        order_dates = []
+        total_prices = []
+
+        # Fetch additional details for each order
+        for order_id in order_ids:
+            # Fetch driver details
+            driver_query = "SELECT DriverName, CurrentDriverLocation FROM Driver WHERE OrdersID = %s"
+            cursor.execute(driver_query, (order_id,))
+            driver_details = cursor.fetchone()
+            drivers.append(driver_details)
+
+            # Fetch time of order
+            time_query = "SELECT TimeOfOrder FROM DateOrder WHERE OrdersID = %s"
+            cursor.execute(time_query, (order_id,))
+            time_of_order = cursor.fetchone()[0]
+            order_dates.append(time_of_order)
+
+            # Fetch total cart
+            total_query = "SELECT TotalCart FROM Price WHERE OrdersID = %s"
+            cursor.execute(total_query, (order_id,))
+            total_cart = cursor.fetchone()[0]
+            total_prices.append(total_cart)
+
+        # Close cursor and connection
+        cursor.close()
+        connection.close()
+
         # Display the page initially with no specific customer selected
-        return render_template('customer_home.html', recent_orders=[], customer_id=customer_id)
+        return render_template('customer_home.html', customer_id=customer_id, customer_name=customer_name, drivers=drivers, order_dates=order_dates, total_prices=total_prices, order_ids=order_ids)
+
+@app.route('/self_edit/<int:customer_id>', methods=['POST'])
+def self_edit(customer_id):
+    name = request.form['name']
+    email = request.form['email']
+    address = request.form['address']
+    payment_info = request.form['payment_type']
+
+    connection = connect_to_database()
+    cursor = connection.cursor()
+
+    query = "UPDATE Customer SET CustomerName = %s, CustomerEmail = %s, CustomerAddress = %s, CustomerPaymentType = %s WHERE CustomerID = %s"
+    cursor.execute(query, (name, email, address, payment_info, customer_id))
+    
+    connection.commit()
+
+    # Fetch updated customer data
+    cursor.execute("SELECT * FROM Customer WHERE CustomerID = %s", (customer_id,))
+    customer = cursor.fetchone()
+
+    cursor.close()
+    connection.close()
+    
+    # Return the updated customer data or redirect to the customer home page
+    if customer:
+        return redirect(url_for('customer_home', customer_id=customer_id))
+    else:
+        return "Customer not found", 404
 
 # Route to display all customers
 @app.route('/edit_customer', methods=['GET'])

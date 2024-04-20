@@ -4,14 +4,66 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Menu</title>
+    <h1>Menu</h1>
+    <nav>
+        <ul>
+            <li>
+                <a href="{{ url_for('home') }}">Home</a>
+            </li>
+            <li>
+                <a href="{{ url_for('get_restaurants') }}">Restaurants</a>
+            </li>
+        </ul>
+    </nav>
+    <style>
+        body {
+            background-color: rgb(79, 91, 102);
+            color: white;
+            margin: 0;
+            padding: 0;
+        }
+        nav {
+            width: 100%;
+            text-decoration: none;
+            text-align: center;
+            list-style-type: none;
+            background-color: aqua;
+            margin-right: 10px;
+            display: flex;
+        }
+        ul {
+            text-decoration: none;
+            list-style-type: none;
+            padding-left: 0;
+            flex: 1;
+        }
+        h1 {
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
-    <h1>Menu</h1>
+    
     <p>Menu items for Restaurant {{ restaurant_name }}</p>
-    <ul>
-        {% for item in menu_items %}
-            <li>{{ item.MenuItem }} - {{ item.MenuItemDesc }} - ${{ item.MenuItemPrice }}</li>
-        {% endfor %}
-    </ul>
+    <table>
+        <thead>
+            <tr>
+                <th>Item</th>
+                <th>Description</th>
+                <th>Price</th>
+                <th>Image</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in menu_items %}
+                <tr>
+                    <td>{{ item.MenuItem }}</td>
+                    <td>{{ item.MenuItemDesc }}</td>
+                    <td>${{ item.MenuItemPrice }}</td>
+                    <!-- <td><img src="{{ url_for('static', filename='images/') }}" alt="{{ item.MenuItem }}"></td> -->
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 </body>
 </html>

@@ -4,25 +4,70 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Restaurants</title>
+    <h1>Restaurants</h1>
+    <nav>
+        <ul>
+            <li>
+                <a href="{{ url_for('home') }}">Home</a>
+            </li>
+        </ul>
+    </nav>
     <style>
         body {
-            background-color: rgb(79,91,102);
-            color:white;
+            background-color: rgb(79, 91, 102);
+            color: white;
+            margin: 0;
+            padding: 0;
+        }
+        .restaurant-list {
+            display: flex;
+            flex-wrap: wrap;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .restaurant-item {
+            flex: 1 0 25%; /* Each item spans 25% of the width */
+            margin: 10px; /* Adjust as needed */
+            text-align: center;
+        }
+        .restaurant-image {
+            width: 100%;
+            height: auto;
+            cursor: pointer;
+        }
+        nav {
+            width: 100%;
+            text-decoration: none;
+            text-align: center;
+            list-style-type: none;
+            background-color: aqua;
+            margin-right: 10px;
+        }
+        ul {
+            text-decoration: none;
+            list-style-type: none;
+            padding-left: 0;
+        }
+        h1 {
+            text-align: center;
         }
     </style>
 </head>
 <body>
-    <h1>Restaurants</h1>
-    
-    <form action="{{ url_for('get_restaurants') }}" method="POST">
-        <label for="restaurant">Select a Restaurant:</label>
-        <select id="restaurant" name="restaurant_id">
-            <option value="" selected disabled>Please select one</option>
-            {% for restaurant in restaurants %}
-                <option value="{{ restaurant.RestaurantID }}">{{ restaurant[1] }}</option>
-            {% endfor %}
-        </select>
-        <input id="menu" type="submit" value="View Menu">
-    </form>
+    <ul id="restaurantList" class="restaurant-list">
+        {% for restaurant in restaurants %}
+        <li class="restaurant-item" onclick="viewMenu({{ restaurant[0] }})">
+            <div>{{ restaurant[1] }}</div>
+            <img class="restaurant-image" src="{{ url_for('static', filename='images/' + restaurant[1] + '.png') }}" alt="Restaurant Image">
+        </li>
+        {% endfor %}
+    </ul>
+
+    <script>
+        function viewMenu(restaurantId) {
+            window.location.href = "/menu/" + restaurantId;
+        }
+    </script>
 </body>
 </html>
