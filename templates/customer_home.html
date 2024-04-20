@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Home</title>
+</head>
+<body>
+    <h1>Customer Home</h1>  
+    <div id="recent_orders">
+        <h2>Recent Orders for: {{ customer_name }}</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Order#</th>
+                    <th>Driver Name</th>
+                    <th>Driver Location</th>
+                    <th>Date</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in recent_orders %}
+                <tr>
+                    <td>{{ order['OrderID'] }}</td>
+                    <td>{{ order['DriverName'] }}</td>
+                    <td>{{ order['DriverLocation'] }}</td>
+                    <td>{{ order['Date'] }}</td>
+                    <td>{{ order['Total'] }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

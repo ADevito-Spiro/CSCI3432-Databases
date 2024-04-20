@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Customers</title>
+    <title>New Customer Registration</title>
 </head>
 <body>
-    <h1>Customers</h1>
-    <form method="POST" action="/customers">
+    <h1>New Customer Registration</h1>
+    <form id="createForm" method="POST" action="/customers" onsubmit="errorMessage()">
         <label for="name">Name:</label>
         <input type="text" id="name" name="name" required><br><br>
         
@@ -20,5 +20,33 @@
         
         <input type="submit" value="Create Account">
     </form>
+
+    <script>
+        var error = "{{ error_message }}";
+        function errorMessage() {
+            if (error.value > 0)
+            {
+                alert(error);
+            } else {
+                displayPopup();
+            }
+        }
+        function displayPopup() {
+            // Get the form input values
+            var name = document.getElementById('name').value;
+            var email = document.getElementById('email').value;
+            var address = document.getElementById('address').value;
+            var paymentInfo = document.getElementById('payment_info').value;
+
+            // Create the popup message
+            var message = "Name: " + name + "\n";
+            message += "Email: " + email + "\n";
+            message += "Address: " + address + "\n";
+            message += "Payment Type: " + paymentInfo + "\n";
+
+            // Display the popup
+            alert("You have submitted the following information:\n\n" + message);
+        }
+    </script>
 </body>
 </html>

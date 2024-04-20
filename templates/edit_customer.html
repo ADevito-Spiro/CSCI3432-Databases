@@ -54,9 +54,10 @@
             <td>
                 <!-- Button to trigger the modal -->
                 <button onclick="openModal('{{ customer[0] }}')">Edit</button>
-                <form method="POST" action="{{ url_for('delete_customer', customer_id=customer[0]) }}">
-                    <input type="submit" value="Delete">
-                </form>
+                <form id="deleteForm" method="POST" action="{{ url_for('delete_customer') }}">
+                    <input type="hidden" name="customer_id" value="{{ customer[0] }}">
+                    <input type="submit" value="Delete" onclick="return confirmDelete()">
+                </form>              
             </td>
         </tr>
         {% endfor %}
@@ -69,8 +70,6 @@
             <h2>Edit Customer</h2>
             <!-- Form for editing customer data -->
             <form id="editForm" action="{{ url_for('edit_single_customer') }}" method="POST">
-                <!-- Input fields for editing customer data -->
-                <!-- You can customize the fields as per your requirements -->
                 <input type="hidden" id="customerId" name="customer_id">
                 <label for="name">Name:</label>
                 <input type="text" id="name" name="name"><br><br>
@@ -93,11 +92,17 @@
             // Display the modal
             document.getElementById('editModal').style.display = 'block';
         }
-
         function closeModal() {
             // Hide the modal
             document.getElementById('editModal').style.display = 'none';
         }
+        function confirmDelete() {
+        // Display a confirmation dialog
+        var result = confirm("Confirm customer deletion?");
+        
+        // If user clicks OK, submit the form
+        return result;
+    }
     </script>
 </body>
 </html>

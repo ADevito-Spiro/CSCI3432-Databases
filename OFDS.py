@@ -19,34 +19,46 @@ def connect_to_database():
 def home():
     return render_template('index.html')
 
-@app.route('/restaurants', methods=['GET', 'POST'])
-def get_restaurants():
+@app.route('/login', methods=['GET', 'POST'])
+def login():
     if request.method == 'POST':
-        # Extract restaurant_id from form submission
-        restaurant_id = request.form.get('restaurant_id')
-
-        # Redirect to menu route with the selected restaurant_id
-        return redirect(url_for('menu', restaurant_id=restaurant_id))
-    
-    try:
-        # Connect to the database
+        email = request.form.get('email')
         connection = connect_to_database()
         cursor = connection.cursor()
 
-        # Query to fetch all restaurants
-        query = "SELECT * FROM Restaurant"
-        cursor.execute(query)
-        restaurants = cursor.fetchall()
-    except Exception as e:
-        print("Error fetching restaurants:", e)
-        restaurants = []  # Provide an empty list if there's an error
-    finally:
-        # Close cursor and connection
-        cursor.close()
-        connection.close()
+        query = "SELECT CustomerID FROM Customer WHERE CustomerEmail = %s"
+        cursor.execute(query, (email,))
+        customer_id = cursor.fetchone()
 
+        if customer_id is not None:
+            customer_id = customer_id[0]
+            connection.close()
+            cursor.close()
+            return redirect(url_for('customer_home', customer_id=customer_id))
+        else:
+            # If the email does not exist in the database, redirect to the new_customer route
+            return redirect(url_for('new_customer', email=email))
+    
+    # For GET requests, render the login template
+    return render_template('login.html')
+
+@app.route('/restaurants', methods=['GET', 'POST'])
+def get_restaurants():
+    if request.method == 'POST':
+        restaurant_id = request.values.get('restaurant_id')
+        print(restaurant_id)
+        return redirect(url_for('menu', restaurant_id=restaurant_id))
+
+    connection = connect_to_database()
+    cursor = connection.cursor()
+
+    query = "Select * From Restaurant Where Approved = TRUE"
+    cursor.execute(query)
+    restaurants = cursor.fetchall()
+
+    cursor.close()
+    connection.close()
     return render_template('restaurants.html', restaurants=restaurants)
-
 
 # Route for displaying the menu for a specific restaurant
 @app.route('/menu/<int:restaurant_id>')
@@ -71,7 +83,6 @@ def menu(restaurant_id):
 
     return render_template('menu.html', restaurant_name=restaurant_name, menu_items=menu_items)
 
-
 # Route for creating a new customer
 @app.route('/customers', methods=['GET', 'POST'])
 def new_customer():
@@ -86,20 +97,59 @@ def new_customer():
         connection = connect_to_database()
         cursor = connection.cursor()
 
-        # Query to insert new customer into the database
-        query = "INSERT INTO Customer (CustomerName, CustomerEmail, CustomerAddress, CustomerPaymentType) VALUES (%s, %s, %s, %s)"
-        cursor.execute(query, (name, email, address, payment_info))
+        query = "Select COUNT(*) From Customer WHERE CustomerEmail = %s"
+        cursor.execute(query, (email,))
+        existing = cursor.fetchone()[0]
 
-        # Commit changes to the database
-        connection.commit()
+        if existing > 0:
+            error_message = "An account already exists for this email"
+            return render_template('customers.html', error_message=error_message)
+        else:
+            # Query to insert new customer into the database
+            query = "INSERT INTO Customer (CustomerName, CustomerEmail, CustomerAddress, CustomerPaymentType) VALUES (%s, %s, %s, %s)"
+            cursor.execute(query, (name, email, address, payment_info))
 
-        # Close cursor and connection
-        cursor.close()
-        connection.close()
+            # Commit changes to the database
+            connection.commit()
 
-        return redirect(url_for('home'))
+            customer_id=cursor.lastrowid
 
+            # Close cursor and connection
+            cursor.close()
+            connection.close()
+            return redirect(url_for('customer_home',customer_id=customer_id))
     return render_template('customers.html')
+
+@app.route('/customer_home/<int:customer_id>', methods=['GET', 'POST'])
+def customer_home(customer_id):
+    if request.method == 'POST':
+        try:
+            # Connect to the database
+            connection = connect_to_database()
+            cursor = connection.cursor()
+
+            # Fetch recent orders for the selected customer
+            query = "SELECT * FROM Orders WHERE CustomerID = %s"
+            cursor.execute(query, (customer_id,))
+            recent_orders = cursor.fetchall()
+
+            # Fetch customer name for the selected customer
+            query = "SELECT CustomerName FROM Customer WHERE CustomerID = %s"
+            cursor.execute(query, (customer_id,))
+            customer_name = cursor.fetchone()[0]
+
+            # Close cursor and connection
+            cursor.close()
+            connection.close()
+
+            return render_template('customer_home.html', recent_orders=recent_orders, customer_name=customer_name)
+        except Exception as e:
+            # Handle errors
+            print("Error fetching recent orders:", e)
+            return "Error fetching recent orders", 500  # Return an error message with status code 500
+    else:
+        # Display the page initially with no specific customer selected
+        return render_template('customer_home.html', recent_orders=[], customer_id=customer_id)
 
 # Route to display all customers
 @app.route('/edit_customer', methods=['GET'])
@@ -149,7 +199,6 @@ def edit_single_customer():
     else:
         return redirect(url_for('edit_customers'))  # Redirect to the edit_customer page if not a POST request
 
-
 # Route to handle deleting a customer
 @app.route('/delete_customer', methods=['POST'])
 def delete_customer():
@@ -168,7 +217,6 @@ def delete_customer():
         connection.close()
 
         return redirect(url_for('edit_customers'))
-
 
 @app.route('/restaurants/update', methods=['GET', 'POST'])
 def update_restaurant():
@@ -231,8 +279,6 @@ def handle_restaurant_action():
     connection.close()
 
     return render_template('admin_restaurants.html', unapproved_restaurants=unapproved_restaurants, all_restaurants=all_restaurants)
-
-
 
 if __name__ == '__main__':
     app.run(debug=True)
