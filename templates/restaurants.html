@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Restaurants</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='restaurants.css') }}">
     <h1>Restaurants</h1>
     <nav>
         <ul>
@@ -12,47 +13,7 @@
             </li>
         </ul>
     </nav>
-    <style>
-        body {
-            background-color: rgb(79, 91, 102);
-            color: white;
-            margin: 0;
-            padding: 0;
-        }
-        .restaurant-list {
-            display: flex;
-            flex-wrap: wrap;
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-        .restaurant-item {
-            flex: 1 0 25%; /* Each item spans 25% of the width */
-            margin: 10px; /* Adjust as needed */
-            text-align: center;
-        }
-        .restaurant-image {
-            width: 100%;
-            height: auto;
-            cursor: pointer;
-        }
-        nav {
-            width: 100%;
-            text-decoration: none;
-            text-align: center;
-            list-style-type: none;
-            background-color: aqua;
-            margin-right: 10px;
-        }
-        ul {
-            text-decoration: none;
-            list-style-type: none;
-            padding-left: 0;
-        }
-        h1 {
-            text-align: center;
-        }
-    </style>
+
 </head>
 <body>
     <ul id="restaurantList" class="restaurant-list">

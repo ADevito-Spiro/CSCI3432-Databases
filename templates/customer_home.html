@@ -6,30 +6,7 @@
     <!-- <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script> -->
     <title>Customer Home</title>
-    <style>
-        body {
-            background-color: rgb(79,91,102);
-            color:white;
-        }
-        .overlay {
-            position: fixed;
-            top: 0;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background-color: rgba(0, 0, 0, 0.5);
-            display: none;
-            justify-content: center;
-            align-items: center;
-        }
-        .popup {
-            background-color: white;
-            padding: 20px;
-            border-radius: 5px;
-            width: 300px;
-            color: black;
-        }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='customer_home.css') }}">
 </head>
 <body>
     <h1>Customer Home</h1>  

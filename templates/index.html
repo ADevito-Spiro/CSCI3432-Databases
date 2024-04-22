@@ -4,20 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home</title>
-    <style>
-        body {
-            background-color: rgb(79,91,102);
-            color:white;
-        }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
 </head>
 <body>
     <h1>Welcome to Online Food Delivery System</h1>
     <ul>
         <li><a href="{{ url_for('get_restaurants') }}">View Restaurants</a></li>
         <li><a href="{{ url_for('new_customer') }}">Create New Customer</a></li>
-        <li><a href="{{ url_for('handle_restaurant_action') }}"">Admin Page</a></li>
-        <li><a href="{{ url_for('login') }}"">Login</a></li>
+        <li><a href="{{ url_for('handle_restaurant_action') }}">Admin Page</a></li>
+        <li><a href="{{ url_for('login') }}">Login</a></li>
     </ul>
 </body>
 </html>

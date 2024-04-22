@@ -1,0 +1,102 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: rgb(79, 91, 102);
+    color: white;
+    margin: 0;
+    padding: 0;
+}
+
+h1, h2 {
+    text-align: center;
+}
+
+#recent_orders {
+    margin-top: 20px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+table th, table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+table th {
+    background-color: #f2f2f2;
+}
+
+button {
+    background-color: #2ecc71;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #27ae60;
+}
+
+.overlay {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: none;
+    justify-content: center;
+    align-items: center;
+}
+
+.popup {
+    background-color: white;
+    padding: 20px;
+    border-radius: 5px;
+    width: 300px;
+    color: black;
+}
+
+.popup h2 {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.popup form {
+    margin-top: 10px;
+}
+
+.popup form label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.popup form input[type="text"],
+.popup form input[type="email"] {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+}
+
+.popup form input[type="submit"],
+.popup form button {
+    background-color: #2ecc71;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.popup form input[type="submit"]:hover,
+.popup form button:hover {
+    background-color: #27ae60;
+}
