@@ -7,24 +7,61 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='update_restaurant.css') }}">
 </head>
 <body>
-    <h1>Update Restaurant</h1>
-    <form method="POST" action="/restaurants/update">
-        <label for="restaurant_id">Restaurant ID:</label>
-        <input type="text" id="restaurant_id" name="restaurant_id" required><br><br>
-        
-        <label for="menu_item">Menu Item:</label>
-        <input type="text" id="menu_item" name="menu_item" required><br><br>
-        
-        <label for="item_desc">Item Description:</label>
-        <input type="text" id="item_desc" name="item_desc" required><br><br>
-        
-        <label for="item_price">Item Price:</label>
-        <input type="text" id="item_price" name="item_price" required><br><br>
-        
-        <label for="location">New Location:</label>
-        <input type="text" id="location" name="location" required><br><br>
-        
-        <input type="submit" value="Update Restaurant">
-    </form>
+    <h1>Update Restaurants</h1>
+    <table border="1">
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Star Rating</th>
+            <th>Location</th>
+            <th>Actions</th>
+        </tr>
+        {% for restaurant in restaurants %}
+        <tr>
+            <td>{{ restaurant[0] }}</td>
+            <td>{{ restaurant[1] }}</td>
+            <td>{{ restaurant[2] }}</td>
+            <td>{{ restaurant[3] }}</td>
+            <td>{{ restaurant[4] }}</td>
+            <td>
+                <!-- Button to trigger the modal -->
+                <button onclick="openModal('{{ restaurant[0] }}')">Edit</button>
+                <!-- Add delete functionality if needed -->
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <!-- Modal form -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>Edit Restaurant</h2>
+            <!-- Form for editing restaurant data -->
+            <form id="editForm" action="{{ url_for('update_single_restaurant') }}" method="POST">
+                <input type="hidden" id="restaurantId" name="restaurant_id">
+                <label for="description">Description:</label>
+                <input type="text" id="description" name="description"><br><br>
+                <label for="location">Location:</label>
+                <input type="text" id="location" name="location"><br><br>
+                <input type="submit" value="Save">
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // JavaScript functions to open and close the modal
+        function openModal(restaurantId) {
+            // Set the restaurant ID in the hidden input field
+            document.getElementById('restaurantId').value = restaurantId;
+            // Display the modal
+            document.getElementById('editModal').style.display = 'block';
+        }
+        function closeModal() {
+            // Hide the modal
+            document.getElementById('editModal').style.display = 'none';
+        }
+    </script>
 </body>
 </html>

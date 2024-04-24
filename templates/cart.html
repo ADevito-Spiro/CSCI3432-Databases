@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cart</title>
+</head>
+<body>
+    <h1>Shopping Cart</h1>
+
+    <!-- Display user information -->
+    <div>
+        <h2>User Information</h2>
+        <p>Name: {{ name }}</p>
+        <p>Email: {{ email }}</p>
+        <p>Address: {{ address }}</p>
+    </div>
+
+    <!-- Display items in the cart -->
+    <div>
+        <h2>Items in Cart</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Item</th>
+                    <th>Description</th>
+                    <th>Price</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in cart_items %}
+                    <tr>
+                        <td>{{ item.item_name }}</td>
+                        <td>{{ item.item_description }}</td>
+                        <td>${{ item.item_price }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

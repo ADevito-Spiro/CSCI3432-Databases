@@ -1,8 +1,8 @@
-from flask import Flask, render_template, request, redirect, url_for
-from datetime import datetime
+from flask import Flask, render_template, request, redirect, url_for, session, flash
 import pymysql
 
 app = Flask(__name__)
+app.secret_key = 'OFDS'
 
 # Configuration for MySQL connection
 DB_HOST = 'localhost'
@@ -23,23 +23,35 @@ def home():
 def login():
     if request.method == 'POST':
         email = request.form.get('email')
+
+        # Check if the username and password are correct
+        if email == 'admin@admin.com':
+            session['logged_in'] = True  # Set session variable to indicate user is logged in
+            return redirect(url_for('handle_restaurant_action'))
+
+        # Connect to the database
         connection = connect_to_database()
         cursor = connection.cursor()
 
+        # Query to check if the email exists in the Customer table
         query = "SELECT CustomerID FROM Customer WHERE CustomerEmail = %s"
         cursor.execute(query, (email,))
         customer_id = cursor.fetchone()
 
         if customer_id is not None:
             customer_id = customer_id[0]
+            session['customer_id'] = customer_id[0]
             connection.close()
             cursor.close()
+            session['logged_in'] = True  # Set session variable to indicate user is logged in
             return redirect(url_for('customer_home', customer_id=customer_id))
         else:
+            connection.close()
+            cursor.close()
             # If the email does not exist in the database, redirect to the new_customer route
             return redirect(url_for('new_customer', email=email))
-    
-    # For GET requests, render the login template
+
+    # For GET requests or if login was unsuccessful, render the login template
     return render_template('login.html')
 
 @app.route('/restaurants', methods=['GET', 'POST'])
@@ -60,9 +72,32 @@ def get_restaurants():
     connection.close()
     return render_template('restaurants.html', restaurants=restaurants)
 
-# Route for displaying the menu for a specific restaurant
-@app.route('/menu/<int:restaurant_id>')
+@app.route('/menu/<int:restaurant_id>', methods=['GET', 'POST'])
 def menu(restaurant_id):
+    if 'logged_in' not in session or not session['logged_in']:
+        flash("Please log in to place an order.", "error")
+        return redirect(url_for('login'))
+
+    if request.method == 'POST':
+        # Get the selected menu item from the form
+        selected_item = request.form.get('selected_item')
+
+        # Validate if the selected item is not empty
+        if not selected_item:
+            flash("Please select a menu item.", "error")
+            return redirect(url_for('menu', restaurant_id=restaurant_id))
+
+        # Here, you can process the order submission, such as adding the item to the cart
+        # For demonstration purposes, we'll just append the item to the cart in the session
+        if 'cart' not in session:
+            session['cart'] = []
+
+        session['cart'].append(selected_item)
+
+        flash("Order placed successfully!", "success")
+        return redirect(url_for('view_cart'))
+
+    # If it's a GET request, retrieve the restaurant's menu items and render the menu page
     # Connect to the database
     connection = connect_to_database()
     cursor = connection.cursor()
@@ -75,13 +110,59 @@ def menu(restaurant_id):
     query = "SELECT MenuItem, MenuItemDesc, MenuItemPrice FROM Menu WHERE RestaurantID = %s"
     cursor.execute(query, (restaurant_id,))
     menu_items = cursor.fetchall()
-    print(menu_items)
 
     # Close cursor and connection
     cursor.close()
     connection.close()
 
-    return render_template('menu.html', restaurant_name=restaurant_name, menu_items=menu_items)
+    # Fetch user information
+    if 'customer_id' in session:
+        connection = connect_to_database()
+        cursor = connection.cursor()
+
+        customer_id = session['customer_id']
+        
+        # You can retrieve additional details of items from the database if needed
+        query = "SELECT CustomerName, CustomerEmail, CustomerAddress FROM Customer WHERE CustomerID = %s"
+        cursor.execute(query, (customer_id,))
+        name, email, address = cursor.fetchone()
+
+        cursor.close()
+        connection.close()
+
+        return render_template('cart.html', restaurant_name=restaurant_name, menu_items=menu_items, restaurant_id=restaurant_id,
+                               customer_id=customer_id, name=name, email=email, address=address)
+    else:
+        return render_template('menu.html', restaurant_name=restaurant_name, menu_items=menu_items, restaurant_id=restaurant_id)
+
+@app.route('/view_cart')
+def view_cart():
+    # Check if 'cart' exists in session, if not, initialize it as an empty list
+    if 'cart' not in session:
+        session['cart'] = []
+    
+    # Fetch the cart items from the session
+    cart_items = session['cart']
+
+    # Fetch user information
+    if 'customer_id' in session:
+        connection = connect_to_database()
+        cursor = connection.cursor()
+
+        customer_id = session['customer_id']
+        
+        # You can retrieve additional details of items from the database if needed
+        query = "SELECT CustomerName, CustomerEmail, CustomerAddress FROM Customer WHERE CustomerID = %s"
+        cursor.execute(query, (customer_id,))
+        name, email, address = cursor.fetchone()
+
+        cursor.close()
+        connection.close()
+
+        return render_template('cart.html', customer_id=customer_id,cart_items=cart_items, name=name, email=email, address=address)
+    else:
+        return render_template('cart.html', cart_items=cart_items)
+
 
 # Route for creating a new customer
 @app.route('/customers', methods=['GET', 'POST'])
@@ -119,8 +200,6 @@ def new_customer():
             connection.close()
             return redirect(url_for('customer_home',customer_id=customer_id))
     return render_template('customers.html')
-
-from flask import render_template
 
 @app.route('/customer_home/<int:customer_id>', methods=['GET', 'POST'])
 def customer_home(customer_id):
@@ -288,30 +367,49 @@ def delete_customer():
 
 @app.route('/restaurants/update', methods=['GET', 'POST'])
 def update_restaurant():
+    connection = connect_to_database()
+    cursor = connection.cursor()
+
+    # Fetch all customers from the database
+    query = "SELECT * FROM Restaurant"
+    cursor.execute(query)
+    restaurants = cursor.fetchall()
+
+    cursor.close()
+    connection.close()
+
+    return render_template('update_restaurant.html', restaurants=restaurants)
+
+@app.route('/update_restaurant', methods=['POST'])
+def update_single_restaurant():
     if request.method == 'POST':
+        # Retrieve form data
         restaurant_id = request.form['restaurant_id']
-        menu_item = request.form['menu_item']
-        item_desc = request.form['item_desc']
-        item_price = request.form['item_price']
+        description = request.form['description']
         location = request.form['location']
 
-        connection = connect_to_database()
-        cursor = connection.cursor()
+        try:
+            # Connect to the database
+            connection = connect_to_database()
+            cursor = connection.cursor()
 
-        query = "INSERT INTO Menu (RestaurantID, MenuItem, MenuItemDesc, MenuItemPrice) VALUES (%s, %s, %s, %s)"
-        cursor.execute(query, (restaurant_id, menu_item, item_desc, item_price))
+            # Update restaurant data in the database
+            query = "UPDATE Restaurant SET RestaurantDesc = %s, RestaurantLocation = %s WHERE RestaurantID = %s"
+            cursor.execute(query, (description, location, restaurant_id))
+            connection.commit()
 
-        query = "UPDATE Restaurant SET RestaurantLocation = %s WHERE RestaurantID = %s"
-        cursor.execute(query, (location, restaurant_id))
+            # Close cursor and connection
+            cursor.close()
+            connection.close()
 
-        connection.commit()
+            return redirect(url_for('edit_restaurants'))  # Redirect to the edit_restaurants page after successful update
+        except Exception as e:
+            # Handle errors
+            print("Error updating restaurant data:", e)
+            return "Error updating restaurant data", 500  # Return an error message with status code 500
+    else:
+        return redirect(url_for('edit_restaurants'))  # Redirect to the edit_restaurants page if not a POST request
 
-        cursor.close()
-        connection.close()
-
-        return redirect(url_for('home'))
-
-    return render_template('update_restaurant.html')
 
 @app.route('/admin/restaurants/action', methods=['GET', 'POST'])
 def handle_restaurant_action():

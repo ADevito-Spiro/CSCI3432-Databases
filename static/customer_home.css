@@ -38,6 +38,7 @@ button {
     padding: 10px 20px;
     cursor: pointer;
     transition: background-color 0.3s ease;
+    text-align: center;
 }
 
 button:hover {
@@ -54,6 +55,7 @@ button:hover {
     display: none;
     justify-content: center;
     align-items: center;
+    text-align: center;
 }
 
 .popup {
@@ -98,5 +100,29 @@ button:hover {
 
 .popup form input[type="submit"]:hover,
 .popup form button:hover {
+    background-color: #27ae60;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+li {
+    margin-bottom: 10px;
+}
+
+a {
+    text-decoration: none;
+    color: white;
+    background-color: #2ecc71;
+    padding: 10px 20px;
+    border-radius: 5px;
+    display: block;
+    text-align: center;
+    transition: background-color 0.3s ease;
+}
+
+a:hover {
     background-color: #27ae60;
 }

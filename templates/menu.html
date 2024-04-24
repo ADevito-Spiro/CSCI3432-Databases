@@ -5,17 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Menu</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='menu.css') }}">
-    <h1>Menu</h1>
-    <nav>
-        <ul>
-            <li>
-                <a href="{{ url_for('home') }}">Home</a>
-            </li>
-            <li>
-                <a href="{{ url_for('get_restaurants') }}">Restaurants</a>
-            </li>
-        </ul>
-    </nav>
     <style>
         body {
             background-color: rgb(79, 91, 102);
@@ -44,27 +33,45 @@
     </style>
 </head>
 <body>
-    
-    <p>Menu items for Restaurant {{ restaurant_name }}</p>
-    <table>
-        <thead>
-            <tr>
-                <th>Item</th>
-                <th>Description</th>
-                <th>Price</th>
-                <th>Image</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for item in menu_items %}
+    <h1>Menu for {{ restaurant_name }}</h1>
+    <nav>
+        <ul>
+            <li>
+                <a href="{{ url_for('home') }}">Home</a>
+            </li>
+            <li>
+                <a href="{{ url_for('get_restaurants') }}">Restaurants</a>
+            </li>
+            <li>
+                <a href="{{ url_for('view_cart') }}">Cart</a>
+            </li>
+        </ul>
+    </nav>
+
+    <form action="{{ url_for('menu', restaurant_id=restaurant_id) }}" method="POST">
+        <table>
+            <thead>
                 <tr>
-                    <td>{{ item.MenuItem }}</td>
-                    <td>{{ item.MenuItemDesc }}</td>
-                    <td>${{ item.MenuItemPrice }}</td>
-                    <!-- <td><img src="{{ url_for('static', filename='images/') }}" alt="{{ item.MenuItem }}"></td> -->
+                    <th>Item</th>
+                    <th>Description</th>
+                    <th>Price</th>
+                    <th>Order</th>
                 </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                {% for item in menu_items %}
+                    <tr>
+                        <td>{{ item[0] }}</td>
+                        <td>{{ item[1] }}</td>
+                        <td>${{ item[2] }}</td>
+                        <td>
+                            <input type="hidden" name="selected_item" value="{{ item[3] }}">
+                            <button type="submit">Order</button>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>            
+        </table>
+    </form>
 </body>
 </html>
