@@ -87,8 +87,6 @@ def menu(restaurant_id):
             flash("Please select a menu item.", "error")
             return redirect(url_for('menu', restaurant_id=restaurant_id))
 
-        # Here, you can process the order submission, such as adding the item to the cart
-        # For demonstration purposes, we'll just append the item to the cart in the session
         if 'cart' not in session:
             session['cart'] = []
 
