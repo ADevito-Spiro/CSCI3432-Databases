@@ -6,7 +6,7 @@
 </head>
 <body>
     <h1>New Customer Registration</h1>
-    <form id="createForm" method="POST" action="/customers" onsubmit="errorMessage()">
+    <form id="createForm" method="POST" action="/customers" onsubmit="displayPopup()">
         <label for="name">Name:</label>
         <input type="text" id="name" name="name" required><br><br>
         
@@ -23,15 +23,6 @@
     </form>
 
     <script>
-        var error = "{{ error_message }}";
-        function errorMessage() {
-            if (error.value > 0)
-            {
-                alert(error);
-            } else {
-                displayPopup();
-            }
-        }
         function displayPopup() {
             // Get the form input values
             var name = document.getElementById('name').value;
@@ -49,5 +40,14 @@
             alert("You have submitted the following information:\n\n" + message);
         }
     </script>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+        <ul class="flash-messages">
+            {% for message in messages %}
+                <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    {% endwith %}
 </body>
 </html>

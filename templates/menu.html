@@ -65,7 +65,7 @@
                         <td>{{ item[1] }}</td>
                         <td>${{ item[2] }}</td>
                         <td>
-                            <input type="hidden" name="selected_item" value="{{ item[3] }}">
+                            <input type="hidden" name="selected_item" value="{{ menu_items }}">
                             <button type="submit">Order</button>
                         </td>
                     </tr>
@@ -74,4 +74,13 @@
         </table>
     </form>
 </body>
+{% with messages = get_flashed_messages() %}
+    {% if messages %}
+        <ul class="flash-messages">
+            {% for message in messages %}
+                <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    {% endwith %}
 </html>

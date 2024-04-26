@@ -49,11 +49,6 @@
     </style>
 </head>
 <body>
-    
-
-    <!-- Button to trigger the popup -->
-    
-
     <!-- Popup for editing user information -->
     <div id="popup" class="overlay">
         <div class="popup">
@@ -75,6 +70,7 @@
 
     <div id="recent_orders">
         <h2>Recent Orders for: {{ customer_name }}</h2>
+        <h3>Some orders may have not been assigned a driver yet.</h3>
         <table>
             <thead>
                 <tr>
@@ -105,6 +101,15 @@
             popup.style.display = (popup.style.display === 'none' || popup.style.display === '') ? 'block' : 'none';
         }
     </script>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+        <ul class="flash-messages">
+            {% for message in messages %}
+                <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    {% endwith %}
     <div id="map" style="height: 400px;"></div>
     <!-- <script>
         var map = L.map('map').setView([32.4488, -81.7832], 13); // Set initial map center and zoom level

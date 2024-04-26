@@ -6,8 +6,10 @@ body {
     padding: 0;
 }
 
-h1, h2 {
+h1, h2, h3 {
     text-align: center;
+    padding-bottom: 0px;
+    margin-bottom: 5px;
 }
 
 #recent_orders {

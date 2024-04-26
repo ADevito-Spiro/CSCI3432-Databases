@@ -1,42 +1,162 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cart</title>
-</head>
-<body>
-    <h1>Shopping Cart</h1>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Cart</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
+        <style>
+            /* Style for the modal dialog */
+            .modal {
+                display: none;
+                position: fixed;
+                z-index: 1;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                overflow: auto;
+                background-color: rgb(0,0,0);
+                background-color: rgba(0,0,0,0.4);
+                padding-top: 60px;
+            }
+            
+            /* Style for modal content */
+            .modal-content {
+                background-color: #fefefe;
+                color: black;
+                margin: 5% auto;
+                padding: 20px;
+                border: 1px solid #888;
+                width: 80%;
+                box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+            }
+            
+            /* Close button style */
+            .close {
+                color: #aaa;
+                float: right;
+                font-size: 28px;
+                font-weight: bold;
+            }
+            
+            /* Close button hover style */
+            .close:hover,
+            .close:focus {
+                color: black;
+                text-decoration: none;
+                cursor: pointer;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Shopping Cart</h1>
 
-    <!-- Display user information -->
-    <div>
-        <h2>User Information</h2>
-        <p>Name: {{ name }}</p>
-        <p>Email: {{ email }}</p>
-        <p>Address: {{ address }}</p>
-    </div>
+        <!-- Display user information -->
+        <div>
+            <h2>User Information</h2>
+            <p>Name: {{ name }}</p>
+            <p>Email: {{ email }}</p>
+            <p>Address: {{ address }}</p>
+        </div>
 
-    <!-- Display items in the cart -->
-    <div>
-        <h2>Items in Cart</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Item</th>
-                    <th>Description</th>
-                    <th>Price</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for item in cart_items %}
+        <!-- Display items in the cart -->
+        <div>
+            <h2>Items in Cart</h2>
+            <table>
+                <thead>
                     <tr>
-                        <td>{{ item.item_name }}</td>
-                        <td>{{ item.item_description }}</td>
-                        <td>${{ item.item_price }}</td>
+                        <th>Item</th>
+                        <th>Price</th>
                     </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-</body>
+                </thead>
+                <tbody>
+                    {% for item in extracted_items %}
+                        <tr>
+                            <td>{{ item['name'] }}</td>
+                            <td>${{ item['price'] }}</td>
+                        </tr>
+                        <tr>
+                            <td>{{ item['description'] }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div>
+            {% if customer_id %}
+                <button onclick="openCheckoutModal()">Checkout</button>
+                <div id="checkoutModal" class="modal">
+                    <div class="modal-content">
+                        <span class="close" onclick="closeCheckoutModal()">&times;</span>
+                        <h2>Checkout</h2>
+                        {% if has_payment_info %}
+                            <h3>Your Payment Information:</h3>
+                            <!-- Form for editing payment details -->
+                            <form id="paymentForm" action="{{ url_for('submit_order') }}" method="POST">
+                                <label for="card_number">Card Number:</label>
+                                <input type="text" id="card_number" name="card_number" value="{{ payment_info[1] }}" placeholder="XXXX XXXX XXXX XXXX" required><br>
+                                
+                                <label for="card_name">Name on the Card:</label>
+                                <input type="text" id="card_name" name="card_name" value="{{ payment_info[2] }}" required><br>
+        
+                                <label for="card_expire_date">Expiration Date:</label>
+                                <input type="text" id="card_expire_date" name="card_expire_date" value="{{ payment_info[3] }}" placeholder="MM/YYYY" required><br>
+        
+                                <label for="card_ccn">Security Code:</label>
+                                <input type="text" id="card_ccn" name="card_ccn" value="{{ payment_info[4] }}" placeholder="XXX" required><br>
+        
+                                <button onclick="submitOrder()" type="button">Confirm Payment</button>
+                            </form>
+                        {% else %}
+                            <p>Please enter your payment details to proceed with checkout:</p>
+                            <!-- Form for entering payment details -->
+                            <form id="paymentForm" action="{{ url_for('submit_order') }}" method="POST">
+                                <label for="card_number">Card Number:</label>
+                                <input type="text" id="card_number" name="card_number" placeholder="XXXX XXXX XXXX XXXX" required><br>
+                                
+                                <label for="card_name">Name on the Card:</label>
+                                <input type="text" id="card_name" name="card_name" required><br>
+        
+                                <label for="card_expire_date">Expiration Date:</label>
+                                <input type="text" id="card_expire_date" name="card_expire_date" placeholder="MM/YYYY" required><br>
+        
+                                <label for="card_ccn">Security Code:</label>
+                                <input type="text" id="card_ccn" name="card_ccn" placeholder="XXX" required><br>
+        
+                                <button onclick="submitOrder()" type="button">Confirm Payment</button>
+                            </form>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+        
+
+
+        <script>
+            function openCheckoutModal() {
+                var modal = document.getElementById('checkoutModal');
+                modal.style.display = 'block';
+            }
+
+            function closeCheckoutModal() {
+                var modal = document.getElementById('checkoutModal');
+                modal.style.display = 'none';
+            }
+
+            function submitOrder() {
+                alert("Checkout successful!");
+                document.getElementById("paymentForm").submit();
+            }
+
+            document.getElementById("paymentForm").addEventListener("submit", function(event) {
+                var cardNumber = document.getElementById("card_number").value;
+                if (cardNumber.length !== 19) {
+                    alert("Card Number must be exactly 19 characters long.");
+                    event.preventDefault();
+                }
+            });
+        </script>
+    </body>
 </html>
