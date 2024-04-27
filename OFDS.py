@@ -206,7 +206,7 @@ def submit_order():
         connection.close()
 
         session.pop('cart', None)
-        session.pop('payment_info', None)
+        session.pop('restaurant_id', None)
 
         flash("Order placed successfully! Your order number is {}".format(order_id), "success")
         return redirect(url_for('customer_home', customer_id=customer_id))
